@@ -1,0 +1,92 @@
+[
+  {
+    "model": "GPT-4o",
+    "provider": "openai",
+    "category": "AppDev (Code Generation)",
+    "task_id": "factorial",
+    "task_title": "Python Factorial",
+    "prompt": "Write a python program to find factorial of given number.",
+    "response": "Certainly! You can calculate the factorial of a given number in Python using either an iterative approach or a recursive approach. Below are examples of both methods:\n\n### Iterative Approach\n\n```python\ndef factorial_iterative(n):\n    if n < 0:\n        return \"Factorial is not defined for negative numbers.\"\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n\n# Example usage\nnumber = 5\nprint(f\"The factorial of {number} is {factorial_iterative(number)}\")\n```\n\n### Recursive Approach\n\n```python\ndef factorial_recursive(n):\n    if n < 0:\n        return \"Factorial is not defined for negative numbers.\"\n    if n == 0 or n == 1:\n        return 1\n    else:\n        return n * factorial_recursive(n - 1)\n\n# Example usage\nnumber = 5\nprint(f\"The factorial of {number} is {factorial_recursive(number)}\")\n```\n\n### Explanation\n\n- **Iterative Approach**: This method uses a loop to multiply the numbers from 2 up to `n` to get the factorial.\n- **Recursive Approach**: This method calls the function itself with a decremented value until it reaches the base case (`n == 0` or `n == 1`), at which point it returns 1.\n\nBoth methods will give you the factorial of a non-negative integer. Note that factorial is not defined for negative numbers, and both implementations handle this case by returning a message.",
+    "latency_ms": 6340.69
+  },
+  {
+    "model": "GPT-4o",
+    "provider": "openai",
+    "category": "Data (SQL Generation & Analysis)",
+    "task_id": "sql_orders_jan2026",
+    "task_title": "Orders in January 2026",
+    "prompt": "Write a SQL query to show all orders placed in January 2026. Table: orders (order_id, customer_id, order_date)",
+    "response": "To retrieve all orders placed in January 2026 from the `orders` table, you can use the following SQL query:\n\n```sql\nSELECT order_id, customer_id, order_date\nFROM orders\nWHERE order_date >= '2026-01-01' AND order_date < '2026-02-01';\n```\n\nThis query selects the `order_id`, `customer_id`, and `order_date` from the `orders` table where the `order_date` is between January 1, 2026, and before February 1, 2026. This approach ensures that all orders from January 2026 are included.",
+    "latency_ms": 3058.64
+  },
+  {
+    "model": "GPT-4o",
+    "provider": "openai",
+    "category": "DevOps (Infrastructure Automation)",
+    "task_id": "devops_k8s_restart",
+    "task_title": "K8s Pod Restart",
+    "prompt": "How do you restart / recreate a single pod in Kubernetes using kubectl?",
+    "response": "To restart or recreate a single pod in Kubernetes using `kubectl`, you typically have a few options depending on the context and the type of controller managing the pod (e.g., Deployment, StatefulSet, etc.). Here are some common methods:\n\n### 1. If the Pod is Managed by a Deployment\n\nIf the pod is part of a Deployment, you can trigger a restart by updating the Deployment. This is often done by changing an annotation or by using the `kubectl rollout restart` command:\n\n```bash\nkubectl rollout restart deployment <deployment-name>\n```\n\nThis command will restart all the pods managed by the specified Deployment. Kubernetes will terminate the existing pods and create new ones.\n\n### 2. If the Pod is Managed by a StatefulSet\n\nFor a StatefulSet, you can also use the `kubectl rollout restart` command:\n\n```bash\nkubectl rollout restart statefulset <statefulset-name>\n```\n\nThis will restart the pods in the StatefulSet in a controlled manner, respecting the order and any other constraints defined in the StatefulSet.\n\n### 3. If the Pod is Managed by a DaemonSet\n\nSimilarly, for a DaemonSet, you can restart the pods using:\n\n```bash\nkubectl rollout restart daemonset <daemonset-name>\n```\n\n### 4. If the Pod is Not Managed by a Controller\n\nIf the pod is not managed by a higher-level controller (like a standalone pod), you can delete the pod directly. Kubernetes will not automatically recreate it unless it is part of a controller. To delete a pod:\n\n```bash\nkubectl delete pod <pod-name>\n```\n\nIf the pod is part of a ReplicaSet, Deployment, or other controller, the controller will automatically create a new pod to replace the deleted one.\n\n### 5. Using Annotations to Trigger a Restart\n\nFor Deployments, you can also trigger a restart by adding or updating an annotation. This method is useful if you want to avoid using `kubectl rollout restart`:\n\n```bash\nkubectl patch deployment <deployment-name> -p \\\n  \"{\\\"spec\\\":{\\\"template\\\":{\\\"metadata\\\":{\\\"annotations\\\":{\\\"kubectl.kubernetes.io/restartedAt\\\":\\\"$(date +%Y-%m-%dT%H:%M:%S%z)\\\"}}}}}\"\n```\n\nThis command updates the pod template's annotations, which forces the Deployment to recreate the pods.\n\nChoose the method that best fits your scenario based on how your pods are managed.",
+    "latency_ms": 8293.84
+  },
+  {
+    "model": "Claude 3 Sonnet",
+    "provider": "bedrock",
+    "category": "AppDev (Code Generation)",
+    "task_id": "factorial",
+    "task_title": "Python Factorial",
+    "prompt": "Write a python program to find factorial of given number.",
+    "response": "Sure, here's a Python program to find the factorial of a given number:\n\n```python\ndef factorial(n):\n    \"\"\"\n    This function calculates the factorial of a given number.\n    \n    Args:\n        n (int): The number for which the factorial needs to be calculated.\n        \n    Returns:\n        int: The factorial of the given number.\n    \"\"\"\n    \n    # Base case: Factorial of 0 or 1 is 1\n    if n == 0 or n == 1:\n        return 1\n    \n    # Recursive case: Calculate the factorial by multiplying n with the factorial of (n-1)\n    else:\n        return n * factorial(n-1)\n\n# Get the number from the user\nnum = int(input(\"Enter a number: \"))\n\n# Calculate the factorial and print the result\nresult = factorial(num)\nprint(f\"The factorial of {num} is: {result}\")\n```\n\nHere's how the program works:\n\n1. The `factorial` function takes an integer `n` as input.\n2. The base case checks if `n` is 0 or 1. If it is, the function returns 1 because the factorial of 0 and 1 is 1.\n3. If `n` is not 0 or 1, the function recursively calls itself with `n-1` as the argument and multiplies `n` with the result.\n4. The program prompts the user to enter a number.\n5. The `factorial` function is called with the user's input as the argument, and the result is stored in the `result` variable.\n6. The program prints the factorial of the given number.\n\nExample usage:\n\n```\nEnter a number: 5\nThe factorial of 5 is: 120\n```\n\nIn the example above, the program calculates the factorial of 5, which is 120 (5 * 4 * 3 * 2 * 1).\n\nNote: This implementation uses recursion to calculate the factorial. For large numbers, it may cause a `RecursionError` due to the maximum recursion depth being exceeded. In such cases, an iterative approach may be more appropriate.",
+    "latency_ms": 8084.14
+  },
+  {
+    "model": "Claude 3 Sonnet",
+    "provider": "bedrock",
+    "category": "Data (SQL Generation & Analysis)",
+    "task_id": "sql_orders_jan2026",
+    "task_title": "Orders in January 2026",
+    "prompt": "Write a SQL query to show all orders placed in January 2026. Table: orders (order_id, customer_id, order_date)",
+    "response": "To show all orders placed in January 2026 from the `orders` table, you can use the following SQL query:\n\n```sql\nSELECT *\nFROM orders\nWHERE order_date BETWEEN '2026-01-01' AND '2026-01-31';\n```\n\nThis query selects all columns (`*`) from the `orders` table where the `order_date` is between '2026-01-01' (inclusive) and '2026-01-31' (inclusive), effectively retrieving all orders placed during the month of January 2026.\n\nIf you want to retrieve specific columns instead of all columns, you can modify the `SELECT` part of the query. For example:\n\n```sql\nSELECT order_id, customer_id, order_date\nFROM orders\nWHERE order_date BETWEEN '2026-01-01' AND '2026-01-31';\n```\n\nThis query will retrieve only the `order_id`, `customer_id`, and `order_date` columns for orders placed in January 2026.\n\nMake sure to replace `orders` with the actual name of your table if it differs from the given example.",
+    "latency_ms": 3787.89
+  },
+  {
+    "model": "Claude 3 Sonnet",
+    "provider": "bedrock",
+    "category": "DevOps (Infrastructure Automation)",
+    "task_id": "devops_k8s_restart",
+    "task_title": "K8s Pod Restart",
+    "prompt": "How do you restart / recreate a single pod in Kubernetes using kubectl?",
+    "response": "To restart or recreate a single pod in Kubernetes using `kubectl`, you can follow these steps:\n\n1. Get the name of the pod you want to restart:\n\n```\nkubectl get pods\n```\n\nThis will list all the pods running in the current namespace. Note down the name of the pod you want to restart or recreate.\n\n2. To delete the existing pod:\n\n```\nkubectl delete pod <pod-name>\n```\n\nReplace `<pod-name>` with the name of the pod you want to restart.\n\n3. After deleting the pod, Kubernetes will automatically recreate a new pod based on the existing deployment or replicaset configurations.\n\nYou can watch the status of the new pod creation using the following command:\n\n```\nkubectl get pods --watch\n```\n\nThis command will continuously monitor the pod status, and you should see the new pod being created.\n\nAlternatively, you can use the `kubectl replace` command to recreate the pod without deleting it first:\n\n```\nkubectl get pod <pod-name> -o yaml | kubectl replace --force -f -\n```\n\nThis command retrieves the YAML manifest of the existing pod, and then uses that YAML to replace (recreate) the pod.\n\nIt's important to note that when you delete or replace a pod, any data stored in the pod's containers will be lost, as pods are designed to be ephemeral. If you need to persist data, you should use persistent volumes or other persistent storage solutions provided by Kubernetes.",
+    "latency_ms": 5548.37
+  },
+  {
+    "model": "DeepSeek R1 7B",
+    "provider": "ollama",
+    "category": "AppDev (Code Generation)",
+    "task_id": "factorial",
+    "task_title": "Python Factorial",
+    "prompt": "Write a python program to find factorial of given number.",
+    "response": "To find the factorial of a given number in Python, we can use an iterative approach which is efficient and straightforward for non-negative integers.\n\nHere's the step-by-step explanation:\n\n1. **Define the Function**: Create a function named `factorial` that takes an integer `n` as input.\n2. **Handle Base Case**: If `n` is less than or equal to 0, return 1 because the factorial of 0 and negative numbers (if considered) is defined as 1 for simplicity.\n3. **Initialize Result Variable**: Start with a variable `result` set to 1, as multiplying by 1 does not change the value.\n4. **Iterate from 1 to n**: Use a loop that runs from 1 up to and including `n`, multiplying `result` by each integer in this range.\n5. **Return Result**: After completing the loop, return the accumulated product stored in `result`.\n\nHere is the Python code implementing these steps:\n\n```python\ndef factorial(n):\n    if n <= 0:\n        return 1\n    result = 1\n    for i in range(1, n + 1):\n        result *= i\n    return result\n\n# Example usage:\nprint(factorial(5))  # Output: 120\n```\n\nThis code efficiently calculates the factorial of a given number using an iterative approach.",
+    "latency_ms": 31747.97
+  },
+  {
+    "model": "DeepSeek R1 7B",
+    "provider": "ollama",
+    "category": "Data (SQL Generation & Analysis)",
+    "task_id": "sql_orders_jan2026",
+    "task_title": "Orders in January 2026",
+    "prompt": "Write a SQL query to show all orders placed in January 2026. Table: orders (order_id, customer_id, order_date)",
+    "response": "To retrieve all orders placed in January 2026 from the `orders` table, you can use the following SQL query:\n\n```sql\nSELECT order_id, customer_id, order_date \nFROM orders \nWHERE order_date BETWEEN '2026-01-01' AND '2026-01-31';\n```\n\n**Explanation:**\n- `SELECT order_id, customer_id, order_date`: This selects the columns we need from each record.\n- `FROM orders`: Specifies the table to query.\n- `WHERE order_date BETWEEN '2026-01-01' AND '2026-01-31'`: Filters records where the `order_date` falls within January 2026.",
+    "latency_ms": 14303.52
+  },
+  {
+    "model": "DeepSeek R1 7B",
+    "provider": "ollama",
+    "category": "DevOps (Infrastructure Automation)",
+    "task_id": "devops_k8s_restart",
+    "task_title": "K8s Pod Restart",
+    "prompt": "How do you restart / recreate a single pod in Kubernetes using kubectl?",
+    "response": "To restart or recreate a single pod in Kubernetes using `kubectl`, follow these organized steps:\n\n1. **Check Pod Status**: Use `kubectl get pods --healthier-than=0` to list all healthy pods, including the one you want to restart.\n\n2. **Verify Pod Health**: If your pod isn't responding, check its status with `kubectl get mypodname -n mynamespace`. Ensure it's marked as unhealthy (status 403 or 5xx).\n\n3. **Delete the Pod**: Before recreating, delete the pod using:\n   ```bash\n   kubectl delete pod mypodname -n mynamespace\n   ```\n\n4. **Replace with New Configuration**:\n   - If you have a replacement file (`mypods.yaml`), apply it to recreate the pod:\n     ```bash\n     kubectl apply -n mynamespace -f mypods.yaml\n     ```\n   - Alternatively, use `kubectl replace` for efficiency if using templates:\n     ```bash\n     kubectl replace mypodname template_name -n mynamespace\n     ```\n\n5. **Handle Dependencies**: If the pod has dependencies or conditions, ensure they are handled appropriately before or after deletion.\n\nBy following these steps, you can effectively restart or recreate a single pod in your Kubernetes cluster using `kubectl`.",
+    "latency_ms": 17733.88
+  }
+]
