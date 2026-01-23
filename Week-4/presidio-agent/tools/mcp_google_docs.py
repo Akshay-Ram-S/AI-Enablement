@@ -5,6 +5,10 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 import os
 import re
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 mcp = FastMCP("Presidio Agent MCP")
 
@@ -13,21 +17,19 @@ SCOPES = [
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 CREDENTIALS_FILE = os.path.join(BASE_DIR, "credentials.json")
 TOKEN_FILE = os.path.join(BASE_DIR, "token.json")
 
-INSURANCE_DOC_ID = "1Nu4mXrtgp_4p3z6ObLtIcyWs4C7OEOhBxCWq6AdSyIk"
-
+# Get Google Doc IDs from .env (comma-separated)
+INSURANCE_DOC_IDS = os.getenv("INSURANCE_DOC_IDS")
+INSURANCE_DOC_IDS = [doc_id.strip() for doc_id in INSURANCE_DOC_IDS.split(",") if doc_id.strip()]
 
 def get_docs_service():
     creds = None
 
-    # If token.json exists, load credentials
     if os.path.exists(TOKEN_FILE):
         creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
 
-    # If no credentials or they are invalid/expired, run OAuth flow
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -38,12 +40,10 @@ def get_docs_service():
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
             creds = flow.run_local_server(port=0)
         
-        # Save the credentials for the next run
         with open(TOKEN_FILE, "w") as token:
             token.write(creds.to_json())
 
     return build("docs", "v1", credentials=creds)
-
 
 
 def extract_text(doc):
@@ -79,28 +79,35 @@ def relevance_score(query_tokens, sentence_tokens) -> int:
 @mcp.tool()
 def doc_search(query: str) -> str:
     """
-    Answer insurance-related questions using a single Google Doc.
+    Answer insurance-related questions using one or more Google Docs.
     """
     try:
+        if not INSURANCE_DOC_IDS:
+            return "No document IDs configured."
+
         docs_service = get_docs_service()
-        doc = docs_service.documents().get(
-            documentId=INSURANCE_DOC_ID
-        ).execute()
+        all_texts = []
 
-        full_text = extract_text(doc)
+        for doc_id in INSURANCE_DOC_IDS:
+            doc = docs_service.documents().get(documentId=doc_id).execute()
+            full_text = extract_text(doc)
+            if full_text.strip():
+                all_texts.append(full_text)
 
-        if not full_text.strip():
+        if not all_texts:
             return "Not found"
 
         query_tokens = normalize(query)
-        sentences = extract_sentences(full_text)
+        sentences = []
+
+        for text in all_texts:
+            sentences.extend(extract_sentences(text))
 
         scored = []
 
         for sentence in sentences:
             sentence_tokens = normalize(sentence)
             score = relevance_score(query_tokens, sentence_tokens)
-
             if score > 0:
                 scored.append((score, sentence.strip()))
 
@@ -108,14 +115,15 @@ def doc_search(query: str) -> str:
             return "Not found"
 
         scored.sort(key=lambda x: x[0], reverse=True)
-
         top_results = [s for _, s in scored[:10]]
 
         return "\n".join(top_results)
 
     except Exception as e:
-        return f"Error reading Google Doc: {str(e)}"
+        return f"Error reading Google Docs: {str(e)}"
 
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
+
+
