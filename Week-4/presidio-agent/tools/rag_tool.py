@@ -2,10 +2,8 @@ from langchain_chroma import Chroma
 from langchain_aws import BedrockEmbeddings, ChatBedrock
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
 
 CHROMA_DIR = "vectorstore/hr_policy_chroma"
 COLLECTION_NAME = "Presidio_HR_Policy_Document"
