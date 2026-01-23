@@ -1,8 +1,6 @@
-```md
 # Presidio Internal Research Agent 🤖
 
 Presidio Internal Research Agent is a **multi-tool AI assistant** designed to answer internal HR, compliance, insurance, and external industry-related questions using:
-
 - **RAG over internal HR policy PDFs**
 - **Google Docs (via MCP) for insurance documents**
 - **Tavily web search for external/industry queries**
@@ -14,26 +12,24 @@ The agent intelligently selects the correct tool based on the question type and 
 ## 📁 Project Structure
 
 ```
-
 presidio-agent/
-│
 ├── data/
-│   └── hr policy.pdf
-│
+│   └── hr_policy.pdf
 ├── tools/
 │   ├── rag_tool.py
 │   ├── tavily_search.py
 │   ├── vectorize_policies.py
 │   └── mcp_google_docs.py
-│
+├── vectorstore/
+│   └── hr_policy_chroma/        # Generated after running vectorize_policies.py
 ├── agent.py
 ├── app.py
 ├── requirements.txt
-├── credentials.json        # Google OAuth (not committed)
-├── token.json              # Generated after OAuth
-└── .env
-
-````
+├── credentials.json              # Google OAuth (not committed - add to .gitignore)
+├── token.json                    # Generated after OAuth (add to .gitignore)
+├── .env                          # Environment variables (add to .gitignore)
+└── .gitignore
+```
 
 ---
 
@@ -88,7 +84,7 @@ TAVILY_API_KEY=your_tavily_key
 
 # Google Docs
 INSURANCE_DOC_IDS=doc_id_1,doc_id_2
-````
+```
 
 ---
 
@@ -109,10 +105,9 @@ python tools/vectorize_policies.py
 ```
 
 This will:
-
-* Load PDFs from `data/`
-* Split them into chunks
-* Store embeddings in `vectorstore/hr_policy_chroma`
+- Load PDFs from `data/`
+- Split them into chunks
+- Store embeddings in `vectorstore/hr_policy_chroma`
 
 ---
 
@@ -132,7 +127,7 @@ This will:
 python app.py
 ```
 
-You’ll see:
+You'll see:
 
 ```text
 🧠 Agent is running. Type 'exit' to quit.
@@ -141,5 +136,3 @@ You’ll see:
 Ask questions interactively.
 
 ---
-
-
