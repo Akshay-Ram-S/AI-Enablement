@@ -1,0 +1,12 @@
+mcp
+google-auth
+google-auth-oauthlib
+google-api-python-client
+langchain-chroma
+langchain-aws
+langchain-core
+python-dotenv
+langchain-tavily
+langchain-community
+langchain-text-splitters
+asyncio
