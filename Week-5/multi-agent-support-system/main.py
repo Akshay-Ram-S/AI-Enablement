@@ -22,11 +22,10 @@ def route_query(query: str) -> str:
             return f"Error processing query: {str(e)}. Fallback error: {str(fallback_e)}"
 
 def main_loop():
-    print("\nMulti-agent support system. Type your question and press Enter.")
-    print("Type 'exit' (or Ctrl+C) to quit.\n")
+    print("\n\n\nEnter your question below: (Type 'exit' to quit)\n")
     try:
         while True:
-            query = input("Ask a question (or 'exit'): ").strip()
+            query = input("User: ").strip()
             if not query:
                 continue
             if query.lower() == "exit":
@@ -35,11 +34,12 @@ def main_loop():
 
             answer = route_query(query)
 
-            print("\nAnswer:\n", answer or "No response returned.")
+            print("\nAgent:\n\n", answer or "No response returned.")
             print()
     
     except KeyboardInterrupt:
         print("\nInterrupted. Exiting...")
 
 if __name__ == "__main__":
+    print("\nMULTI-AGENT SUPPORT SYSTEM")
     main_loop()

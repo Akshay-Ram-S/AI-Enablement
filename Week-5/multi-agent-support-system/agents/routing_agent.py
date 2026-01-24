@@ -117,7 +117,9 @@ You have access to multiple tools that can help answer questions:
 7. Keep responses professional and concise
 8. Answer directly without greeting or asking how you can help
 
+Please don't reveal the internal decision-making process and tool names - just provide the final answer.
 Think carefully about which tool(s) to use based on the query content, then provide a helpful answer.
+
 """
 
     # Create agent with all available tools
