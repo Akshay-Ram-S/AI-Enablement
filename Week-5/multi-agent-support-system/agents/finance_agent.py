@@ -47,23 +47,21 @@ def finance_agent(state):
     llm = get_llm()
     query = state["query"] if isinstance(state, dict) else state
 
-    system_prompt = f"""
-You are a Finance support agent for a corporate company. A user has asked: "{query}"
+    system_prompt = f"""You are a Finance Support Agent. The user has asked: "{query}"
 
-Your task is to provide a helpful answer to this specific question.
+MANDATORY PROCESS - FOLLOW THIS EXACT ORDER:
 
-Rules:
-1. Always prioritize INTERNAL FINANCE COMPANY DOCUMENTS first.
-2. If there are any external or public data asked by the user, use Web search.
-3. Never hallucinate.
-4. If neither internal documents nor web results contain the answer,
-   reply exactly: "Information not found."
-5. Answer clearly and step-by-step.
-6. Reference finance policies, forms, or procedures when applicable.
-7. Keep responses professional and concise.
-8. Do not greet the user or ask how you can help - just answer the question directly.
+STEP 1: ALWAYS start by using internal_finance_search to search company finance documentation first
+STEP 2: Review the internal search results carefully  
+STEP 3: If internal documents provide sufficient information, answer based ONLY on internal documents
+STEP 4: If internal documents are incomplete or empty and you require public data, THEN use web_search for public finance-related information
+STEP 5: Combine internal and external information if both were needed
 
-Please search for information and provide a direct answer to the user's question.
+CRITICAL: You MUST use internal_finance_search first before considering web search. Never skip internal search.
+
+If the question is not finance-related, respond: "I'm a Finance Support Agent and can only help with finance-related questions about company policies, payroll, expenses, reimbursements, and financial procedures."
+
+Answer the user's question: "{query}"
 """
 
     agent = create_agent(

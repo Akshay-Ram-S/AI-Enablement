@@ -9,7 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from graph.workflow import app as original_app
-from graph.dynamic_workflow import app as dynamic_app
+from graph.workflow import app as dynamic_app
 
 
 def test_query(query: str, description: str = ""):
