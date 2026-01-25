@@ -2,6 +2,52 @@
 
 A dynamic multi-agent support system that intelligently routes user queries to appropriate resources using AI-powered document retrieval and web search capabilities. The system specializes in IT and Finance support queries, leveraging internal company documents and external knowledge sources.
 
+## Workflow Design
+
+The Multi-Agent Support System uses a streamlined workflow to intelligently route and process user queries through specialized domain agents.
+
+### High-Level System Flow
+
+```
+┌─────────────────┐
+│   User Query    │
+└─────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Routing Agent   │
+│ (Classification)│
+└─────────────────┘
+         │
+    ┌────┼────┐
+    │         │
+    ▼         ▼
+┌─────────┐ ┌─────────┐
+│IT Agent │ │Finance  │
+│         │ │Agent    │
+└─────────┘ └─────────┘
+    │         │
+    ▼         ▼
+┌─────────────────┐
+│ Agent Workflow  │
+│ 1. Search       │
+│    Internal     │
+│    Documents    │
+│ 2. For external │
+│    sources, Web |
+|    Search       │
+│ 3. Generate     │
+│    Response     │
+└─────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Final Response  │
+│ to User         │
+└─────────────────┘
+```
+
+
 ## 🚀 Features
 
 - **Dynamic Routing**: Intelligent agent that selects the most appropriate tools based on query content
