@@ -9,3 +9,4 @@ langchain-chroma
 pypdf
 tavily-python
 chromadb
+pytest

@@ -3,3 +3,4 @@ venv/
 __pycache__
 vectorstore/
 .DS_Store
+.pytest_cache/
