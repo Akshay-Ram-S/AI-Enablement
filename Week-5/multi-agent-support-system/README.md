@@ -120,10 +120,6 @@ multi-agent-support-system/
    pip install -r requirements.txt
    ```
 
-4. **Alternative installation using setup.py**:
-   ```bash
-   pip install -e .
-   ```
 
 ## ⚙️ Configuration
 
@@ -170,13 +166,67 @@ Based on the IT policy documents, here are the steps to set up VPN access...
 
 
 
-### Testing
+## 🧪 Testing
 
-Run the comprehensive test suite to compare routing approaches:
+The project includes a comprehensive test suite located in the `tests/` directory to ensure all components work correctly.
 
-```bash
-python test_routing_agent.py
+### Test Structure
+
 ```
+tests/
+├── test_finance_agent.py      # Finance agent functionality tests
+├── test_finance_rag.py        # Finance RAG system tests
+├── test_it_agent.py          # IT agent functionality tests
+├── test_it_rag.py            # IT RAG system tests
+├── test_routing_agent.py     # Routing logic and agent selection tests
+├── test_tavily_tool.py       # Web search tool tests
+└── test_workflow.py          # LangGraph workflow tests
+```
+
+### Running Tests
+
+**Run all tests:**
+```bash
+# Using pytest (recommended)
+pytest tests/
+
+# Or run all test files individually
+python -m pytest tests/
+```
+
+**Run specific test files:**
+```bash
+# Test routing agent functionality
+python tests/test_routing_agent.py
+
+# Test finance components
+python tests/test_finance_agent.py
+python tests/test_finance_rag.py
+
+# Test IT components
+python tests/test_it_agent.py
+python tests/test_it_rag.py
+
+# Test external tools and workflow
+python tests/test_tavily_tool.py
+python tests/test_workflow.py
+```
+
+
+### Test Coverage
+
+- **Agent Tests**: Verify agent routing logic, query processing, and response generation
+- **RAG Tests**: Test document retrieval, embedding generation, and search functionality
+- **Tool Tests**: Validate external API integrations (Tavily web search)
+- **Workflow Tests**: End-to-end testing of the LangGraph workflow orchestration
+- **Integration Tests**: Cross-component functionality and error handling
+
+### Prerequisites for Testing
+
+Ensure you have the following set up before running tests:
+- All dependencies installed (`pip install -r requirements.txt`)
+- Environment variables configured (`.env` file with AWS and Tavily credentials)
+- Document vectorstores generated (run vectorization scripts if needed)
 
 ## 🧪 Example Queries
 
