@@ -1,0 +1,12 @@
+define flow pii_detection
+  priority 75
+
+  $contains_pii = execute detect_pii(text=$bot_message)
+
+  if $contains_pii
+    bot redact_pii
+    set status = "blocked"
+    stop
+
+define bot redact_pii
+  "I apologize, but my response contained personally identifiable information that cannot be shared."

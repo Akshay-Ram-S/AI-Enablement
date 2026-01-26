@@ -1,0 +1,12 @@
+define flow jailbreak_detection
+  priority 100
+
+  $jailbreak_triggers = "ignore previous instructions, ignore all previous, disregard, forget everything, new instructions"
+
+  if $user_message contains $jailbreak_triggers
+    bot refuse_jailbreak_attempt
+    set status = "blocked"
+    stop
+
+define bot refuse_jailbreak_attempt
+  "I cannot comply with requests that attempt to override my instructions or ethical guidelines."

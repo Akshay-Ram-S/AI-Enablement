@@ -1,0 +1,12 @@
+define flow output_moderation
+  priority 100
+
+  $sensitive_output_keywords = "salary, compensation, SSN, social security"
+
+  if $bot_message contains $sensitive_output_keywords
+    bot redact_sensitive_output
+    set status = "blocked"
+    stop
+
+define bot redact_sensitive_output
+  "I apologize, but my response contained sensitive information that I cannot share. Please ask a different question."
