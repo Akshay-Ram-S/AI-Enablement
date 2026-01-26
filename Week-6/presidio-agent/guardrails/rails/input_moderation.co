@@ -1,21 +1,4 @@
 define flow input_moderation
-  priority 100
-
-  if "salary" in $user_message
-    bot refuse sensitive request
-    stop
-
-  if "compensation" in $user_message
-    bot refuse sensitive request
-    stop
-
-  if "wage" in $user_message
-    bot refuse sensitive request
-    stop
-    
-  if "payroll" in $user_message
-    bot refuse sensitive request
-    stop
-
-define bot refuse sensitive request
-  "I cannot provide confidential employee information. This information is protected for privacy reasons."
+  user input: $input
+  bot refuse "blocked by guardrails"
+  stop

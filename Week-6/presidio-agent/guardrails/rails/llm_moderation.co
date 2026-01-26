@@ -4,7 +4,6 @@ define flow llm_moderation
   $is_appropriate = not $llm.is_harmful($response)
 
   if not $is_appropriate
-    bot response: "I apologize, but I need to provide a different response."
     set status = "blocked"
     stop
   else

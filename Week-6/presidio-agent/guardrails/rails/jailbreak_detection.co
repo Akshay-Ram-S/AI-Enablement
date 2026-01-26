@@ -1,12 +1,10 @@
 define flow jailbreak_detection
-  priority 100
+  user input: $input
 
-  $jailbreak_triggers = "ignore previous instructions, ignore all previous, disregard, forget everything, new instructions"
+  # Check if the user is attempting to bypass system constraints
+  $is_jailbreak = $llm.is_jailbreak_attempt($input)
 
-  if $user_message contains $jailbreak_triggers
-    bot refuse_jailbreak_attempt
-    set status = "blocked"
+  if $is_jailbreak
     stop
-
-define bot refuse_jailbreak_attempt
-  "I cannot comply with requests that attempt to override my instructions or ethical guidelines."
+  else
+    bot continue

@@ -1,12 +1,10 @@
 define flow output_moderation
-  priority 100
+  bot response: $response
 
-  $sensitive_output_keywords = "salary, compensation, SSN, social security"
+  $is_appropriate = not $llm.is_harmful($response)
 
-  if $bot_message contains $sensitive_output_keywords
-    bot redact_sensitive_output
+  if not $is_appropriate
     set status = "blocked"
     stop
-
-define bot redact_sensitive_output
-  "I apologize, but my response contained sensitive information that I cannot share. Please ask a different question."
+  else
+    bot continue
