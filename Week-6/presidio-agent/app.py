@@ -1,15 +1,16 @@
 import asyncio
 import logging
 
-from agent import agent, llm
+from agent import agent, llm 
 from langfuse import Langfuse
 from langfuse.langchain import CallbackHandler
 
 from nemoguardrails import RailsConfig, LLMRails
 
-# Reduce noise
+# Suppress MCP server logs
 logging.getLogger("mcp").setLevel(logging.WARNING)
 
+# Initialize Langfuse client
 langfuse = Langfuse()
 
 
@@ -22,63 +23,53 @@ def load_guardrails():
         return None
 
 
-async def invoke_agent(user_input: str, callbacks):
-    response = await agent.ainvoke(
-        {"messages": [("user", user_input)]},
-        {"callbacks": callbacks},
-    )
-
-    return next(
-        msg.content
-        for msg in reversed(response["messages"])
-        if msg.type == "ai"
-    )
-
-
 async def main():
-    print("🧠 Presidio Agent with Unified Guardrails is running. Type 'exit' to quit.")
+    print("🧠 Presidio Agent with Guardrails is running. Type 'exit' to quit.")
 
     rails = load_guardrails()
-    if not rails:
-        print("Guardrails not available. Exiting.")
-        return
+    guardrails_enabled = rails is not None
 
     while True:
         user_input = input("You: ").strip()
 
         if user_input.lower() in {"exit", "quit"}:
-            print("Bye, have a nice day!")
+            print("👋 Have a nice day!")
             break
 
         langfuse_handler = CallbackHandler()
 
         try:
-            # 🔒 SINGLE Guardrails entry point
-            rails_decision = await rails.generate_async(
-                messages=[{"role": "user", "content": user_input}]
+            if guardrails_enabled:
+                rails_response = await rails.generate_async(
+                    messages=[{"role": "user", "content": user_input}],
+                )
+                print(rails_response)
+                # If guardrails blocked → response comes from bot flow
+                if rails_response and rails_response.get("status") == "blocked":
+                    print("\nGuardrails: Blocked by Guardrails\n")
+                    continue
+
+            agent_response = await agent.ainvoke(
+                {"messages": [("user", user_input)]},
+                {"callbacks": [langfuse_handler]},
             )
 
-            # Guardrails blocked the request (input flows)
-            if rails_decision and rails_decision.get("role") == "assistant":
-                print("\nGuardrails: Blocked content, violation of policies\n")
-                continue
-
-            # 🤖 Agent is allowed to run
-            agent_output = await invoke_agent(
-                user_input, [langfuse_handler]
+            final_message = next(
+                msg.content
+                for msg in reversed(agent_response["messages"])
+                if msg.type == "ai"
             )
 
-            # 🔒 Pass agent output THROUGH Guardrails ONCE (same decision surface)
-            rails_output = await rails.generate_async(
-                messages=[{"role": "assistant", "content": agent_output}]
-            )
+            if guardrails_enabled:
+                rails_output = await rails.generate_async(
+                    messages=[{"role": "assistant", "content": final_message}],
+                )
+                print(rails_output)
+                if rails_output and rails_output.get("status") == "blocked":
+                    print(f"\nGuardrails: {rails_output['content']}\n")
+                    continue
 
-            # Output blocked
-            if rails_output and rails_output.get("role") == "assistant":
-                print("\nGuardrails: Blocked content, violation of policies\n")
-                continue
-
-            print(f"\nAgent: {agent_output}\n")
+            print(f"\nAgent: {final_message}\n")
 
         except Exception as e:
             print(f"Error: {e}")
