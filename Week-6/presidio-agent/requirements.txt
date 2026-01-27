@@ -12,7 +12,7 @@ langchain-text-splitters
 langfuse
 langchain-mcp-adapters
 asyncio
-nemoguardrails
+guardrails-ai
 pydantic
 agentevals
 langsmith

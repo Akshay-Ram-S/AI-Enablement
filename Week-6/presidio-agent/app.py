@@ -1,78 +1,85 @@
-import asyncio
 import logging
+import asyncio
 
-from agent import agent, llm 
+from agent import llm  # your ChatOpenAI / LLM
 from langfuse import Langfuse
 from langfuse.langchain import CallbackHandler
 
-from nemoguardrails import RailsConfig, LLMRails
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
-# Suppress MCP server logs
+from guardrails import Guard
+from guardrails.hub import RegexMatch, ToxicLanguage
+
+# Silence noisy logs
+logging.getLogger("opentelemetry").setLevel(logging.ERROR)
 logging.getLogger("mcp").setLevel(logging.WARNING)
 
-# Initialize Langfuse client
+# Langfuse
 langfuse = Langfuse()
 
 
-def load_guardrails():
-    try:
-        config = RailsConfig.from_path("guardrails")
-        return LLMRails(config=config, llm=llm)
-    except Exception as e:
-        print(f"Guardrails initialization failed: {e}")
-        return None
+def build_chain():
+    # -----------------------------
+    # 1️⃣ Guardrails definition
+    # -----------------------------
+
+    guard = Guard().use_many(
+        RegexMatch(
+            regex=r"^(hi|hello|hey|hola|good (morning|afternoon|evening))$",
+            on_fail="exception"
+        ),
+        ToxicLanguage(
+            on_fail="filter",
+        ),
+    )
+
+    # -----------------------------
+    # 2️⃣ Prompt + parser
+    # -----------------------------
+    prompt = ChatPromptTemplate.from_template(
+        "Answer this question: {question}"
+    )
+
+    output_parser = StrOutputParser()
+
+    # -----------------------------
+    # 3️⃣ LCEL chain
+    # -----------------------------
+    chain = (
+        prompt
+        | llm
+        | guard.to_runnable()
+        | output_parser
+    )
+
+    return chain
 
 
 async def main():
-    print("🧠 Presidio Agent with Guardrails is running. Type 'exit' to quit.")
+    print("🧠 Presidio Agent with Guardrails-AI (LCEL) running. Type 'exit' to quit.")
 
-    rails = load_guardrails()
-    guardrails_enabled = rails is not None
+    chain = build_chain()
+    langfuse_handler = CallbackHandler()
 
     while True:
-        user_input = input("You: ").strip()
+        question = input("You: ").strip()
 
-        if user_input.lower() in {"exit", "quit"}:
+        if question.lower() in {"exit", "quit"}:
             print("👋 Have a nice day!")
             break
 
-        langfuse_handler = CallbackHandler()
-
         try:
-            if guardrails_enabled:
-                rails_response = await rails.generate_async(
-                    messages=[{"role": "user", "content": user_input}],
-                )
-                print(rails_response)
-                # If guardrails blocked → response comes from bot flow
-                if rails_response and rails_response.get("status") == "blocked":
-                    print("\nGuardrails: Blocked by Guardrails\n")
-                    continue
-
-            agent_response = await agent.ainvoke(
-                {"messages": [("user", user_input)]},
-                {"callbacks": [langfuse_handler]},
+            # Invoke LCEL chain
+            result = chain.invoke(
+                {"question": question},
+                config={"callbacks": [langfuse_handler]},
             )
 
-            final_message = next(
-                msg.content
-                for msg in reversed(agent_response["messages"])
-                if msg.type == "ai"
-            )
-
-            if guardrails_enabled:
-                rails_output = await rails.generate_async(
-                    messages=[{"role": "assistant", "content": final_message}],
-                )
-                print(rails_output)
-                if rails_output and rails_output.get("status") == "blocked":
-                    print(f"\nGuardrails: {rails_output['content']}\n")
-                    continue
-
-            print(f"\nAgent: {final_message}\n")
+            print(f"\nAgent: {result}\n")
 
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"\n🚫 Guardrails-AI blocked or failed: {e}\n")
 
 
 if __name__ == "__main__":

@@ -19,6 +19,12 @@ def compute_test_score(result):
     tool_success = result.get("tool_success", True)
     hallucination = result.get("hallucination", False)
 
+    trajectory_match = result.get("trajectory_match", True)
+
+    if not trajectory_match:
+        score -= 25
+        suggestions.append("Agent reasoning/tool usage deviated from expected trajectory.")
+
     if correctness < 0.7:
         score -= 40
         suggestions.append("Improve factual correctness of the final answer.")
@@ -37,6 +43,26 @@ def compute_test_score(result):
 
     return max(score, 0), suggestions
 
+
+def build_expected_trajectory(test_case):
+    trajectory = [
+        {"type": "human", "content": test_case["input"]}
+    ]
+
+    if test_case["expected_tool_calls"]:
+        trajectory.append({
+            "type": "ai",
+            "tool_calls": [
+                {"name": tool} for tool in test_case["expected_tool_calls"]
+            ]
+        })
+
+    trajectory.append({
+        "type": "ai",
+        "content": test_case["expected_answer"]
+    })
+
+    return trajectory
 
 
 def compute_metrics(results):
@@ -105,6 +131,7 @@ def generate_markdown_report(results, metrics):
 |------|------|
 | Latency | {r['latency']:.2f}s |
 | Correctness | {r['correctness_score']:.2f} |
+| Trajectory Match | {'✅' if r['trajectory_match'] else '❌'} |
 | Relevance | {r['relevance_score']:.2f} |
 | Helpfulness | {r['helpfulness_score']:.2f} |
 | Tool Usage | {'✅' if r['tool_success'] else '❌'} |
@@ -157,7 +184,7 @@ trajectory_judge = create_async_trajectory_llm_as_judge(
 
 # Trajectory match evaluator (strict mode)
 trajectory_match = create_async_trajectory_match_evaluator(
-    trajectory_match_mode="strict",  # strict expected ordering
+    trajectory_match_mode="strict",  
 )
 
 TEST_DATA = [
@@ -179,7 +206,7 @@ TEST_DATA = [
     {
         "input": "How does Presidio's PTO carryover policy compare to industry standards in the U.S. and globally?",
         "expected_answer": "Presidio's PTO carryover policy aligns with common U.S. industry practices by allowing limited carryover, while globally PTO policies vary by country and regulation.",
-        "expected_tool_calls": ["web_search"],
+        "expected_tool_calls": ["tavily_search"],
     },
     {
         "input": "What is the disciplinary process if an employee repeatedly violates company policy for 3rd time?",
@@ -235,6 +262,58 @@ async def run_and_evaluate(test_case):
         and not test_case["expected_tool_calls"]
     )
 
+    # Debug: Print actual trajectory for analysis
+    print(f"\n=== DEBUG: Test Case: {test_case['input'][:50]}... ===")
+    print("Actual trajectory:")
+    for i, msg in enumerate(raw_msgs):
+        print(f"  {i}: {msg.type} - {getattr(msg, 'tool_calls', None) is not None}")
+        if hasattr(msg, 'tool_calls') and msg.tool_calls:
+            print(f"      Tool calls: {[tc.get('function', {}).get('name', 'unknown') if isinstance(tc, dict) else getattr(tc, 'name', str(tc)) for tc in msg.tool_calls]}")
+
+    # Trajectory matching with more flexible approach
+    if requires_tool:
+        # For tool-required cases, check if any expected tools were called
+        actual_tool_names = []
+        for msg in raw_msgs:
+            if hasattr(msg, 'tool_calls') and msg.tool_calls:
+                for tc in msg.tool_calls:
+                    if isinstance(tc, dict):
+                        # Handle dict format
+                        tool_name = tc.get('function', {}).get('name', '') or tc.get('name', '')
+                    else:
+                        # Handle object format
+                        tool_name = getattr(tc, 'name', str(tc))
+                    actual_tool_names.append(tool_name)
+        
+        print(f"Expected tools: {test_case['expected_tool_calls']}")
+        print(f"Actual tool names: {actual_tool_names}")
+        
+        # Check if expected tools match actual tools (flexible matching)
+        trajectory_match_score = False
+        for expected_tool in test_case['expected_tool_calls']:
+            for actual_tool in actual_tool_names:
+                if expected_tool.lower() in actual_tool.lower() or actual_tool.lower() in expected_tool.lower():
+                    trajectory_match_score = True
+                    break
+            if trajectory_match_score:
+                break
+                
+        trajectory_match_result = {
+            "score": trajectory_match_score,
+            "reasoning": f"Expected tools: {test_case['expected_tool_calls']}, Actual tools: {actual_tool_names}"
+        }
+    else:
+        # For non-tool cases, check that no tools were called
+        has_tool_calls = any(hasattr(msg, 'tool_calls') and msg.tool_calls for msg in raw_msgs)
+        trajectory_match_result = {
+            "score": not has_tool_calls,
+            "reasoning": f"Expected no tools, got tools: {has_tool_calls}"
+        }
+        
+    print(f"Trajectory match result: {trajectory_match_result}")
+
+
+
     return {
         "input": test_case["input"],
         "expected": test_case["expected_answer"],
@@ -246,9 +325,15 @@ async def run_and_evaluate(test_case):
         "eval_reasoning": judge_eval.get("reasoning"),
 
         # Derived metrics
-        "correctness_score": 1.0 if judge_eval["score"] else 0.0,
+        "correctness_score": 1.0 if (
+            judge_eval["score"] and trajectory_match_result["score"]
+        ) else 0.0,
         "relevance_score": 1.0 if judge_eval["score"] else 0.5,
         "helpfulness_score": 1.0 if judge_eval["score"] else 0.5,
+
+        #trajectory match
+        "trajectory_match": trajectory_match_result["score"],
+        "trajectory_match_reasoning": trajectory_match_result.get("reasoning"),
 
         "latency": latency,
         "requires_tool": requires_tool,
@@ -257,7 +342,6 @@ async def run_and_evaluate(test_case):
         "hallucination": hallucination,
         "is_refusal_case": "don't have" in final_answer.lower(),
     }
-
 
 
 

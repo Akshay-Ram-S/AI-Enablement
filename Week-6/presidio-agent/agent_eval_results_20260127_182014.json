@@ -1,0 +1,148 @@
+{
+  "generated_at": "20260127_182014",
+  "metrics": {
+    "overall_pass_rate": 0.8333333333333334,
+    "avg_correctness": 0.8333333333333334,
+    "avg_latency": 13.122750600179037,
+    "tool_success_rate": 1.0,
+    "hallucination_rate": 0.0,
+    "total_tests": 6,
+    "refusal_cases": 1,
+    "hallucinations_detected": 0,
+    "tool_required": 5,
+    "tool_success": 5
+  },
+  "results": [
+    {
+      "input": "What is 2 + 2?",
+      "expected": "I dont have specific tools for math, but the answer is 4.",
+      "output": "I apologize, but I don't have a specific tool or function to perform basic arithmetic calculations like 2 + 2. As Presidio's Internal Research Agent, I'm designed to assist with insurance-related questions, HR policies, industry trends, and regulatory updates using specialized search tools. \n\nFor simple math questions like this, the answer is 4. However, if you have any questions related to Presidio's policies, insurance matters, or industry information, I'd be happy to help you using the appropriate tools at my disposal. Is there anything specific about Presidio or the insurance industry you'd like to know?",
+      "eval_score": true,
+      "eval_score_value": 1.0,
+      "eval_reasoning": null,
+      "correctness_score": 1.0,
+      "relevance_score": 1.0,
+      "helpfulness_score": 1.0,
+      "trajectory_match": true,
+      "trajectory_match_reasoning": "Expected no tools, got tools: False",
+      "latency": 4.997636079788208,
+      "requires_tool": false,
+      "tool_success": true,
+      "hallucination": false,
+      "is_refusal_case": true,
+      "final_score": 100,
+      "suggestions": []
+    },
+    {
+      "input": "Lookup company policy for PTO Carryover",
+      "expected": "Paid Time Off Carryover is ...",
+      "output": "Based on the search of our internal HR policy documents, I can provide you with the company's policy for PTO (Paid Time Off) Carryover:\n\n1. Employees are allowed to carry over unused PTO to the following calendar year.\n2. The maximum amount of PTO that can be carried over is 10 days.\n3. Any PTO balance exceeding 10 days at the end of the calendar year will be forfeited.\n4. There is an exception to the forfeiture rule: If pre-approved by HR, an employee may be allowed to carry over more than 10 days.\n\nTo summarize, you can carry over up to 10 days of unused PTO to the next year. Anything beyond that requires special approval from HR, or it will be lost.\n\nIf you have any questions about this policy or need clarification on specific situations, please don't hesitate to ask.",
+      "eval_score": true,
+      "eval_score_value": 1.0,
+      "eval_reasoning": null,
+      "correctness_score": 1.0,
+      "relevance_score": 1.0,
+      "helpfulness_score": 1.0,
+      "trajectory_match": true,
+      "trajectory_match_reasoning": "Expected tools: ['rag_search'], Actual tools: ['rag_search']",
+      "latency": 11.530672073364258,
+      "requires_tool": true,
+      "tool_success": true,
+      "hallucination": false,
+      "is_refusal_case": false,
+      "final_score": 90,
+      "suggestions": [
+        "Optimize latency (slow reasoning or tools)."
+      ]
+    },
+    {
+      "input": "What AI tools are approved for employees to use at Presidio?",
+      "expected": "Microsoft Copilot, Presidio AI Assistant, Github copilot, Grammarly business ...",
+      "output": "Based on the search of our internal HR policy documents, I can provide you with information about the AI tools approved for employees to use at Presidio. According to the Artificial Intelligence Usage Policy, the following AI tools are approved:\n\n1. Microsoft Copilot (Enterprise License): This is approved for productivity and document generation tasks.\n\n2. Presidio AI Assistant: This is an internal knowledge management system.\n\n3. GitHub Copilot: Approved for code completion, specifically for engineering teams. It's important to note that there are code review requirements associated with its use.\n\n4. Grammarly Business: This tool is approved for writing assistance and content optimization.\n\nThese are the officially approved AI tools for Presidio employees. It's important to stick to these approved tools to ensure compliance with company policies and maintain data security. If you need to use an AI tool that's not on this list, it would be best to consult with your manager or the IT department for guidance.",
+      "eval_score": true,
+      "eval_score_value": 1.0,
+      "eval_reasoning": null,
+      "correctness_score": 1.0,
+      "relevance_score": 1.0,
+      "helpfulness_score": 1.0,
+      "trajectory_match": true,
+      "trajectory_match_reasoning": "Expected tools: ['rag_search'], Actual tools: ['rag_search']",
+      "latency": 11.159745693206787,
+      "requires_tool": true,
+      "tool_success": true,
+      "hallucination": false,
+      "is_refusal_case": false,
+      "final_score": 90,
+      "suggestions": [
+        "Optimize latency (slow reasoning or tools)."
+      ]
+    },
+    {
+      "input": "How does Presidio's PTO carryover policy compare to industry standards in the U.S. and globally?",
+      "expected": "Presidio's PTO carryover policy aligns with common U.S. industry practices by allowing limited carryover, while globally PTO policies vary by country and regulation.",
+      "output": "Now that we have information about both Presidio's policy and industry standards, let's compare them:\n\nPresidio's PTO Carryover Policy:\nAccording to the internal policy document, Presidio allows employees to carry over up to 10 days of unused PTO to the following calendar year. Any balance exceeding 10 days will be forfeited unless pre-approved by HR.\n\nIndustry Standards in the U.S. and Globally:\n\n1. United States:\n   - There is no federal requirement for paid leave in the U.S., which means PTO policies, including carryover, vary widely among employers.\n   - PTO policies are typically set by individual companies or sometimes influenced by state laws.\n   - Some companies offer unlimited PTO, while others use accrual systems.\n\n2. Global Comparison:\n   - The United States stands out among developed nations for lacking federally mandated paid vacation time.\n   - Many other countries have more generous PTO policies mandated by law.\n\nComparing Presidio's policy to these standards:\n\n1. U.S. Comparison:\n   - Presidio's policy of allowing 10 days of PTO carryover is relatively generous in the U.S. context, where there's no federal requirement for PTO or carryover.\n   - The policy provides a balance between allowing some flexibility for employees while also encouraging the use of PTO within the year it's earned.\n\n2. Global Comparison:\n   - Compared to many other developed countries, Presidio's policy (and U.S. policies in general) may be less generous, as many countries have more extensive legally mandated paid leave.\n   - However, the ability to carry over some PTO is a positive feature that may not be available in all countries, even those with more generous overall PTO allocations.\n\nIn conclusion, Presidio's PTO carryover policy of 10 days appears to be competitive within the U.S. market, where such policies vary widely and are not federally mandated. Globally, while the overall PTO allocation in the U.S. tends to be less generous than in many other developed countries, the ability to carry over some PTO provides flexibility that may not be universally available. It's important to note that a comprehensive comparison would require more detailed information about specific countries and industries, as PTO policies can vary significantly across different sectors and regions.",
+      "eval_score": true,
+      "eval_score_value": 1.0,
+      "eval_reasoning": null,
+      "correctness_score": 1.0,
+      "relevance_score": 1.0,
+      "helpfulness_score": 1.0,
+      "trajectory_match": true,
+      "trajectory_match_reasoning": "Expected tools: ['tavily_search'], Actual tools: ['rag_search', 'tavily_search']",
+      "latency": 20.170491933822632,
+      "requires_tool": true,
+      "tool_success": true,
+      "hallucination": false,
+      "is_refusal_case": false,
+      "final_score": 90,
+      "suggestions": [
+        "Optimize latency (slow reasoning or tools)."
+      ]
+    },
+    {
+      "input": "What is the disciplinary process if an employee repeatedly violates company policy for 3rd time?",
+      "expected": "Termination ...",
+      "output": "Based on the search of our internal HR policy documents, I can provide you with information about Presidio's disciplinary process for an employee who repeatedly violates company policy for the third time.\n\nAccording to the Disciplinary Action Framework outlined in our policy document, for a moderate policy violation, the disciplinary process for the third offense is termination.\n\nSpecifically, the relevant section of the policy states:\n\n\"Moderate (policy violation)\nThird Offense: Termination\"\n\nThis means that if an employee commits a moderate policy violation for the third time, the disciplinary action would be termination of employment.\n\nIt's important to note that this is for moderate policy violations. The policy may differ for minor or severe violations. Also, each situation is likely evaluated on a case-by-case basis, taking into account the specific circumstances and the nature of the violations.\n\nIf you need more detailed information about the disciplinary process, such as what constitutes a moderate violation or how the process escalates from first to second to third offense, please let me know, and I can search for more specific details from our HR policies.",
+      "eval_score": true,
+      "eval_score_value": 1.0,
+      "eval_reasoning": null,
+      "correctness_score": 1.0,
+      "relevance_score": 1.0,
+      "helpfulness_score": 1.0,
+      "trajectory_match": true,
+      "trajectory_match_reasoning": "Expected tools: ['rag_search'], Actual tools: ['rag_search']",
+      "latency": 12.98810601234436,
+      "requires_tool": true,
+      "tool_success": true,
+      "hallucination": false,
+      "is_refusal_case": false,
+      "final_score": 90,
+      "suggestions": [
+        "Optimize latency (slow reasoning or tools)."
+      ]
+    },
+    {
+      "input": "What is Presidio's Equal Employment Opportunity (EEO) policy, and how can employees report discrimination?",
+      "expected": "All recruitment decisions are based solely on qualifications, skills, and cultural alignment.",
+      "output": "Based on the search of our internal HR policy documents, I can provide you with information about Presidio's Equal Employment Opportunity (EEO) policy. However, the search didn't return specific information about how employees can report discrimination. Let me summarize what I found and then suggest a follow-up action.\n\nPresidio's Equal Employment Opportunity (EEO) Policy:\nPresidio is committed to fair and equitable hiring practices. The policy states that all recruitment decisions are based solely on qualifications, skills, and cultural alignment. The company does not discriminate based on:\n\n- Race\n- Color\n- Religion\n- Gender\n- Gender identity\n- Sexual orientation\n- National origin\n- Age\n- Disability\n- Veteran status\n- Genetic information\n- Any other protected characteristic under applicable law\n\nThis policy demonstrates Presidio's commitment to equal opportunity in employment practices.\n\nRegarding how employees can report discrimination:\nUnfortunately, the search did not provide specific information on the process for reporting discrimination. This is an important aspect of implementing an EEO policy, and it's possible that this information exists in another document or section of the HR manual.\n\nGiven this gap in information, I would recommend the following:\n\n1. Contact the Human Resources department directly for specific guidance on how to report discrimination. They should be able to provide you with the correct procedure and any necessary forms or contacts.\n\n2. Check if there's an employee handbook or a separate policy document that outlines the complaint or grievance procedures, as this information might be detailed there.\n\n3. Look for information about an Ethics Hotline or a confidential reporting system, which many companies use for such sensitive matters.\n\n4. Speak with your immediate supervisor or manager, who should be trained to handle or escalate such concerns appropriately.\n\nIf you'd like me to search for more specific information about the reporting process, please let me know, and I can try a more targeted query in our internal documents.",
+      "eval_score": false,
+      "eval_score_value": 0.0,
+      "eval_reasoning": null,
+      "correctness_score": 0.0,
+      "relevance_score": 0.5,
+      "helpfulness_score": 0.5,
+      "trajectory_match": true,
+      "trajectory_match_reasoning": "Expected tools: ['rag_search'], Actual tools: ['rag_search']",
+      "latency": 17.889851808547974,
+      "requires_tool": true,
+      "tool_success": true,
+      "hallucination": false,
+      "is_refusal_case": false,
+      "final_score": 50,
+      "suggestions": [
+        "Improve factual correctness of the final answer.",
+        "Optimize latency (slow reasoning or tools)."
+      ]
+    }
+  ]
+}

@@ -1,4 +1,0 @@
-define flow input_moderation
-  user input: $input
-  bot refuse "blocked by guardrails"
-  stop
