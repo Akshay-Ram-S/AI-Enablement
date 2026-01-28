@@ -1,14 +1,15 @@
 import os
 from unittest.mock import Mock, patch
 from langchain.messages import HumanMessage, AIMessage
+from guardrails import _content_filter_logic, _safety_guardrail_logic
 
 # Set minimal environment variables for testing
 os.environ.setdefault("AWS_REGION", "us-east-1")
-os.environ.setdefault("AWS_ACCESS_KEY_ID")
-os.environ.setdefault("AWS_SECRET_ACCESS_KEY")
-os.environ.setdefault("OPEN_API_KEY")
+AWS_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 
-from guardrails import _content_filter_logic, _safety_guardrail_logic
+
 
 def test_content_filter_functionality():
     """Test content filter with various inputs."""
