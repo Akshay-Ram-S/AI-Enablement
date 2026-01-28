@@ -1,10 +1,8 @@
 from agent import agent
 import asyncio
 
-from langfuse import Langfuse
 from langfuse.langchain import CallbackHandler
 
-langfuse= Langfuse()
 
 async def main():
     print("🧠 Agent is running. Type 'exit' to quit.\n")
