@@ -6,13 +6,11 @@ from langchain_aws import ChatBedrock
 from tools.tavily_search import tavily_search_tool
 from tools.rag_tool import load_rag_chain
 from langchain_mcp_adapters.client import MultiServerMCPClient
-from langfuse.langchain import CallbackHandler
 from langchain.agents.middleware import PIIMiddleware
 from langchain.agents.middleware import HumanInTheLoopMiddleware
 from guardrails import content_filter, safety_guardrail
 
-# Initialize Langfuse handler for tracing
-langfuse_handler = CallbackHandler()
+
 
 llm = ChatBedrock(
     model="anthropic.claude-3-5-sonnet-20240620-v1:0",
