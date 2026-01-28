@@ -114,7 +114,6 @@ web-scraper-demo/
 ├── next.config.js
 ├── package.json
 ├── postcss.config.js
-├── tailwind.config.ts
 └── tsconfig.json
 ```
 
@@ -155,7 +154,6 @@ Your IAM user needs the following permissions:
 Try these example URLs:
 - `https://en.wikipedia.org/wiki/Portugal`
 - `https://en.wikipedia.org/wiki/Artificial_intelligence`
-- `https://example.com`
 - `https://www.python.org`
 
 ## 🐛 Troubleshooting
