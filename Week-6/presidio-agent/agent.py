@@ -7,10 +7,12 @@ from tools.tavily_search import tavily_search_tool
 from tools.rag_tool import load_rag_chain
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langfuse.langchain import CallbackHandler
+from langchain.agents.middleware import PIIMiddleware
+from langchain.agents.middleware import HumanInTheLoopMiddleware
+from guardrails import content_filter, safety_guardrail
 
 # Initialize Langfuse handler for tracing
 langfuse_handler = CallbackHandler()
-
 
 llm = ChatBedrock(
     model="anthropic.claude-3-5-sonnet-20240620-v1:0",
@@ -67,6 +69,19 @@ async def create_presidio_agent():
         llm,
         tools=[*mcp_tools, tavily_search, rag_search],
         system_prompt=SYSTEM_PROMPT,
+        middleware=[
+            # Layer 1: Deterministic input filter (before agent)
+            content_filter,
+
+            # Layer 2: PII protection (input and output)
+            PIIMiddleware("email", strategy="redact", apply_to_input=True, apply_to_output=True),
+
+            # Layer 3: Human approval for sensitive tools
+            HumanInTheLoopMiddleware(interrupt_on={"send_email": True}),
+
+            # Layer 4: Model-based safety check (after agent)
+            safety_guardrail,
+        ],
     )
     return agent
 

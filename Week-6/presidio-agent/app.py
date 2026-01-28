@@ -1,85 +1,29 @@
-import logging
+from agent import agent
 import asyncio
-
-from agent import llm  # your ChatOpenAI / LLM
-from langfuse import Langfuse
-from langfuse.langchain import CallbackHandler
-
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-
-from guardrails import Guard
-from guardrails.hub import RegexMatch, ToxicLanguage
-
-# Silence noisy logs
-logging.getLogger("opentelemetry").setLevel(logging.ERROR)
-logging.getLogger("mcp").setLevel(logging.WARNING)
-
-# Langfuse
-langfuse = Langfuse()
-
-
-def build_chain():
-    # -----------------------------
-    # 1️⃣ Guardrails definition
-    # -----------------------------
-
-    guard = Guard().use_many(
-        RegexMatch(
-            regex=r"^(hi|hello|hey|hola|good (morning|afternoon|evening))$",
-            on_fail="exception"
-        ),
-        ToxicLanguage(
-            on_fail="filter",
-        ),
-    )
-
-    # -----------------------------
-    # 2️⃣ Prompt + parser
-    # -----------------------------
-    prompt = ChatPromptTemplate.from_template(
-        "Answer this question: {question}"
-    )
-
-    output_parser = StrOutputParser()
-
-    # -----------------------------
-    # 3️⃣ LCEL chain
-    # -----------------------------
-    chain = (
-        prompt
-        | llm
-        | guard.to_runnable()
-        | output_parser
-    )
-
-    return chain
 
 
 async def main():
-    print("🧠 Presidio Agent with Guardrails-AI (LCEL) running. Type 'exit' to quit.")
-
-    chain = build_chain()
-    langfuse_handler = CallbackHandler()
+    print("🧠 Agent is running. Type 'exit' to quit.\n")
 
     while True:
-        question = input("You: ").strip()
+        user_input = input("You: ").strip()
 
-        if question.lower() in {"exit", "quit"}:
-            print("👋 Have a nice day!")
+        if user_input.lower() in {"exit", "quit"}:
+            print("👋 Goodbye!")
             break
 
-        try:
-            # Invoke LCEL chain
-            result = chain.invoke(
-                {"question": question},
-                config={"callbacks": [langfuse_handler]},
-            )
+        response = await agent.ainvoke({
+            "messages": [
+                ("user", user_input)
+            ]
+        })
 
-            print(f"\nAgent: {result}\n")
+        final_message = next(
+            msg.content for msg in reversed(response["messages"])
+            if msg.type == "ai"
+        )
 
-        except Exception as e:
-            print(f"\n🚫 Guardrails-AI blocked or failed: {e}\n")
+        print("\nAgent:", final_message, "\n")
 
 
 if __name__ == "__main__":

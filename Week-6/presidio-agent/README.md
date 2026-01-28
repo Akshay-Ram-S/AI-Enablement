@@ -22,8 +22,10 @@ presidio-agent/
 │   └── mcp_google_docs.py
 ├── vectorstore/
 │   └── hr_policy_chroma/        # Generated after running vectorize_policies.py
-├── agent.py
-├── app.py
+├── agent.py                     # Main agent with middleware integration
+├── app.py                       # Interactive CLI application
+├── guardrails.py                # Security middleware (content filter & safety guardrail)
+├── test_guardrails.py           # Comprehensive guardrails test suite
 ├── requirements.txt
 ├── credentials.json              # Google OAuth (not committed - add to .gitignore)
 ├── token.json                    # Generated after OAuth (add to .gitignore)
@@ -57,6 +59,69 @@ Defined in `SYSTEM_PROMPT` inside `agent.py`:
 - External → `tavily_search`
 
 The agent **must use tools** and never hallucinates answers.
+
+---
+
+## 🛡️ Security & Guardrails
+
+The Presidio Agent implements a **4-layer security middleware system** that automatically protects against malicious inputs and unsafe outputs:
+
+### 🔒 Layer 1: Content Filter (Input Protection)
+- **Blocks banned keywords** before any processing
+- **Keywords**: `hack`, `exploit`, `malware` (case-insensitive)
+- **Action**: Immediately stops execution and returns safe message
+- **Example**: `"How to hack systems?"` → `"I cannot process requests containing inappropriate content. Please rephrase your request."`
+
+### 🔒 Layer 2: PII Protection (Data Privacy)
+- **Redacts sensitive information** from inputs and outputs
+- **Protected Data**: Email addresses, phone numbers, SSNs
+- **Strategy**: Automatic detection and redaction
+- **Bidirectional**: Protects both user inputs and AI responses
+
+### 🔒 Layer 3: Human-in-the-Loop (Critical Actions)
+- **Requires human approval** for sensitive operations
+- **Triggers**: Email sending, data deletion, system modifications
+- **Workflow**: Agent pauses and waits for explicit user confirmation
+- **Safety**: Prevents autonomous execution of high-risk actions
+
+### 🔒 Layer 4: Safety Guardrail (Output Validation)
+- **AI-powered response evaluation** using Claude model
+- **Process**: Every AI response is evaluated for safety/appropriateness
+- **Detection**: Harmful, biased, or inappropriate content
+- **Action**: Unsafe responses are blocked and replaced with safe alternatives
+
+### 🧪 Testing Your Guardrails
+
+Run the comprehensive test suite to verify all guardrails are working:
+
+```bash
+python test_guardrails.py
+```
+
+**Expected Output:**
+```
+🎉 ALL TESTS PASSED! Your guardrails are working correctly.
+
+💡 Your guardrails will:
+   - Block requests containing 'hack', 'exploit', or 'malware'
+   - Evaluate AI responses for safety using Claude
+   - Properly stop execution when issues are detected
+```
+
+### 🔧 Guardrails Configuration
+
+Guardrails are automatically integrated into the agent middleware:
+
+```python
+middleware=[
+    content_filter,           # Input filtering
+    PIIMiddleware(...),       # PII redaction
+    HumanInTheLoopMiddleware(...), # Human approval
+    safety_guardrail,         # Output validation
+]
+```
+
+**No manual intervention required** - all protections work automatically on every agent interaction.
 
 ---
 
